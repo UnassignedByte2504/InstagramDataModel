@@ -12,245 +12,232 @@ Base = declarative_base()
 
 
 class User(Base):
-                    __tablename__ = 'user'
-                    id = Column(Integer, primary_key=True)
-                    username = Column(String(250), nullable=False)
-                    name = Column(String(250), nullable=False)
-                    lastname = Column(String(250), nullable=False)
-                    email = Column(String(250), nullable=False)
-                    password = Column(String(250), nullable=False)
-                    friends = relationship("User", secondary="friendship")
-                    favourites_characters = relationship("Favourites_characters", back_populates="user")
-                    favourites_planets = relationship("Favourites_planets", back_populates="user")
-                    favourites_starships = relationship("Favourites_starships", back_populates="user")
-                    favourites_vehicles = relationship("Favourites_vehicles", back_populates="user")
-                    favourites_species = relationship("Favourites_species", back_populates="user")
-                    favourites_films = relationship("Favourites_films", back_populates="user")
-                    created = Column(Date(), nullable=False)
-                    last_login_date = Column(Date(), nullable=False)
+                __tablename__ = 'user'
+                id = Column(Integer, primary_key=True)
+                username = Column(String(250), nullable=False)
+                first_name = Column(String(250), nullable=False)
+                last_name = Column(String(250), nullable=False)
+                description = Column(String(250), nullable=True)
+                email = Column(String(250), nullable=False)
+                password = Column(String(250), nullable=False)
+                profile_pic = Column(String(250), nullable=True)
+                posts = relationship("Post", back_populates="user")
+                followers = relationship("Followers", back_populates="user")
+                following = relationship("Following", back_populates="user")
+                stories = relationship("Story", back_populates="user")
+                highlights = relationship("Highlight", back_populates="user")
+                saved_posts = relationship("SavedPost", back_populates="user")
+                locations = relationship("Location", back_populates="user")
+                facebook_account = relationship("FacebookAccount", back_populates="user")
+                direct_messages = relationship("DirectMessage", back_populates="user")
+                blocked_users = relationship("BlockedUser", back_populates="user")
+                account_type = relationship("AccountType", back_populates="user")
 
-                    
-class Friendship(Base):
-                    __tablename__ = 'friendship'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    friend_id = Column(Integer, ForeignKey('user.id'))
+class Story (Base):
+                __tablename__ = 'story'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                image = Column(String(250), nullable=False)
+                views = relationship("View", back_populates="story")
 
+class Post (Base):
+                __tablename__ = 'post'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                caption = Column(String(250), nullable=False)
+                image = Column(String(250), nullable=False)
+                likes = relationship("Like", back_populates="post")
+                comments = relationship("Comment", back_populates="post")
 
-
-
-class Thread(Base):
-                    __tablename__ = 'thread'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    message = Column(String(250), nullable=False)
-                    user = relationship(User)
-
-class Forum (Base):
-                    __tablename__ = 'forum'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    thread_id = Column(Integer, ForeignKey('thread.id'))
-                    user = relationship(User)
-                    thread = relationship(Thread)
-
-class Private_message(Base):
-                    __tablename__ = 'private_message'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    message = Column(String(250), nullable=False)
-                    user = relationship(User)          
-
-class User_session(Base):
-                    __tablename__ = 'user_session'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    token = Column(String(250), nullable=False)
-                    user = relationship(User)                       
+class Feed (Base):
+                __tablename__ = 'feed'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
+                story_id = Column(Integer, ForeignKey('story.id'))
+                story = relationship(Story)
 
 
 
+class Like (Base):
+                __tablename__ = 'like'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
 
-class Planet(Base):
-                    __tablename__ = 'planet'
-                    id = Column(Integer, primary_key=True)
-                    name = Column(String(250), nullable=False)
-                    rotation_period = Column(Integer, nullable=False)
-                    orbital_period = Column(Integer, nullable=False)
-                    diameter = Column(Integer, nullable=False)
-                    climate = Column(String(250), nullable=False)
-                    gravity = Column(String(250), nullable=False)
-                    terrain = Column(String(250), nullable=False)
-                    surface_water = Column(Integer, nullable=False)
-                    population = Column(Integer, nullable=False)
-                    residents = Column(String(250), nullable=False)
-                    films = Column(String(250), nullable=False)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
+class Comment (Base):
+                __tablename__ = 'comment'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
+                comment = Column(String(250), nullable=False)
 
-class Starship(Base):
-                    __tablename__ = 'starship'
-                    id = Column(Integer, primary_key=True)
-                    name = Column(String(250), nullable=False)
-                    model = Column(String(250), nullable=False)
-                    starship_class = Column(String(250), nullable=False)
-                    manufacturer = Column(String(250), nullable=False)
-                    cost_in_credits = Column(Integer, nullable=False)
-                    length = Column(Integer, nullable=False)
-                    crew = Column(Integer, nullable=False)
-                    passengers = Column(Integer, nullable=False)
-                    max_atmosphering_speed = Column(Integer, nullable=False)
-                    hyperdrive_rating = Column(Integer, nullable=False)
-                    mglt = Column(Integer, nullable=False)
-                    cargo_capacity = Column(Integer, nullable=False)
-                    consumables = Column(String(250), nullable=False)
-                    films = Column(String(250), nullable=False)
-                    pilots = Column(String(250), nullable=False)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
+class Followers (Base):
+                __tablename__ = 'followers'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                follower_id = Column(Integer, ForeignKey('user.id'))
+                follower = relationship(User)
+                
+class Following (Base):
+                __tablename__ = 'following'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                following_id = Column(Integer, ForeignKey('user.id'))
+                following = relationship(User)
 
-class Vehicle(Base):
-                    __tablename__ = 'vehicle'
-                    id = Column(Integer, primary_key=True)
-                    name = Column(String(250), nullable=False)
-                    model = Column(String(250), nullable=False)
-                    vehicle_class = Column(String(250), nullable=False)
-                    manufacturer = Column(String(250), nullable=False)
-                    cost_in_credits = Column(Integer, nullable=False)
-                    length = Column(Integer, nullable=False)
-                    crew = Column(Integer, nullable=False)
-                    passengers = Column(Integer, nullable=False)
-                    max_atmosphering_speed = Column(Integer, nullable=False)
-                    cargo_capacity = Column(Integer, nullable=False)
-                    consumables = Column(String(250), nullable=False)
-                    films = Column(String(250), nullable=False)
-                    pilots = Column(String(250), nullable=False)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
 
-class Species(Base):
-                    __tablename__ = 'species'
-                    id = Column(Integer, primary_key=True)
-                    name = Column(String(250), nullable=False)
-                    classification = Column(String(250), nullable=False)
-                    designation = Column(String(250), nullable=False)
-                    average_height = Column(Integer, nullable=False)
-                    skin_colors = Column(String(250), nullable=False)
-                    hair_colors = Column(String(250), nullable=False)
-                    eye_colors = Column(String(250), nullable=False)
-                    average_lifespan = Column(Integer, nullable=False)
-                    homeworld = Column(String(250), nullable=False)
-                    language = Column(String(250), nullable=False)
-                    people = Column(String(250), nullable=False)
-                    films = Column(String(250), nullable=False)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
 
-class Films(Base):
-                    __tablename__ = 'films'
-                    id = Column(Integer, primary_key=True)
-                    title = Column(String(250), nullable=False)
-                    episode_id = Column(Integer, nullable=False)
-                    opening_crawl = Column(String(250), nullable=False)
-                    director = Column(String(250), nullable=False)
-                    producer = Column(String(250), nullable=False)
-                    release_date = Column(String(250), nullable=False)
-                    characters = Column(String(250), nullable=False)
-                    planets = Column(String(250), nullable=False)
-                    starships = Column(String(250), nullable=False)
-                    vehicles = Column(String(250), nullable=False)
-                    species = Column(String(250), nullable=False)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
+class View (Base):
+                __tablename__ = 'view'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_id = Column(Integer, ForeignKey('story.id'))
+                story = relationship(Story)
+        
+class BlockedUser (Base):
+                __tablename__ = 'blocked_user'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                blocked_user_id = Column(Integer, ForeignKey('user.id'))
+                blocked_user = relationship(User)
+        
+class AccountType (Base):
+                __tablename__ = 'account_type'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                type = Column(String(250), nullable=False)
+        
+class DirectMessage (Base):
+                __tablename__ = 'direct_message'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                message = Column(String(250), nullable=False)
+                image = Column(String(250), nullable=False)
+                video = Column(String(250), nullable=False)
+                audio = Column(String(250), nullable=False)
+                recipient_id = Column(Integer, ForeignKey('user.id'))
+                recipient = relationship(User)
 
-class Character(Base):
-                    __tablename__ = 'character'
-                    id = Column(Integer, primary_key=True)
-                    name = Column(String(250), nullable=False)
-                    height = Column(Integer, nullable=False)
-                    mass = Column(Integer, nullable=False)
-                    hair_color = Column(String(250), nullable=False)
-                    skin_color = Column(String(250), nullable=False)
-                    eye_color = Column(String(250), nullable=False)
-                    birth_year = Column(String(250), nullable=False)
-                    gender = Column(String(250), nullable=False)
-                    homeworld = Column(String(250), ForeignKey('planet.url'), nullable=False)
-                    homeworld = relationship(Planet)
-                    films = Column(String(250), ForeignKey('films.url'), nullable=False)
-                    films = relationship(Films)
-                    species = Column(String(250), ForeignKey('species.url'), nullable=False)
-                    species = relationship(Species)
-                    vehicles = Column(String(250), ForeignKey('vehicle.url'), nullable=False)
-                    vehicles = relationship(Vehicle)
-                    starships = Column(String(250), ForeignKey('starship.url'), nullable=False)
-                    starships = relationship(Starship)
-                    created = Column(String(250), nullable=False)
-                    edited = Column(String(250), nullable=False)
-                    url = Column(String(250), nullable=False)
+class Recipient(Base):
+                __tablename__ = 'recipient'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                direct_message_id = Column(Integer, ForeignKey('direct_message.id'))
+                direct_message = relationship(DirectMessage)
+    
+class Hashtag(Base):
+                __tablename__ = 'hashtag'
+                id = Column(Integer, primary_key=True)
+                name = Column(String(250), nullable=False)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
 
-class Homeworld(Base):
-                    __tablename__ = 'homeworld'
-                    id = Column(Integer, primary_key=True)
-                    planet_id = Column(Integer, ForeignKey('planet.id'))
-                    character_id = Column(Integer, ForeignKey('character.id'))
-                    planet = relationship(Planet)
-                    character = relationship(Character)
+class Location(Base):
+                __tablename__ = 'location'
+                id = Column(Integer, primary_key=True)
+                name = Column(String(250), nullable=False)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
 
-class Character_species(Base):
-                    __tablename__ = 'character_species'
-                    id = Column(Integer, primary_key=True)
-                    character_id = Column(Integer, ForeignKey('character.id'))
-                    species_id = Column(Integer, ForeignKey('species.id'))
-                    character = relationship(Character)
-                    species = relationship(Species)
+class Mention(Base):
+                __tablename__ = 'mention'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
 
-class Character_film(Base):
-                    __tablename__ = 'character_film'
-                    id = Column(Integer, primary_key=True)
-                    character_id = Column(Integer, ForeignKey('character.id'))
-                    film_id = Column(Integer, ForeignKey('films.id'))
-                    character = relationship(Character)
-                    film = relationship(Films)
+class SavedPost(Base):
+                __tablename__ = 'saved_post'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                post_id = Column(Integer, ForeignKey('post.id'))
+                post = relationship(Post)
 
-class Starship_film(Base):
-                    __tablename__ = 'starship_film'
-                    id = Column(Integer, primary_key=True)
-                    starship_id = Column(Integer, ForeignKey('starship.id'))
-                    film_id = Column(Integer, ForeignKey('films.id'))
-                    starship = relationship(Starship)
-                    film = relationship(Films)
+class SavedStory(Base):
+                __tablename__ = 'saved_story'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_id = Column(Integer, ForeignKey('story.id'))
+                story = relationship(Story)
 
-class Character_vehicle(Base):
-                    __tablename__ = 'character_vehicle'
-                    id = Column(Integer, primary_key=True)
-                    character_id = Column(Integer, ForeignKey('character.id'))
-                    vehicle_id = Column(Integer, ForeignKey('vehicle.id'))
-                    character = relationship(Character)
-                    vehicle = relationship(Vehicle)
+class Highlight(Base):
+                __tablename__ = 'highlight'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                name = Column(String(250), nullable=False)
+                stories = relationship("Story", back_populates="highlight")
 
-class Favourites(Base):
-                    __tablename__ = 'favourites'
-                    id = Column(Integer, primary_key=True)
-                    user_id = Column(Integer, ForeignKey('user.id'))
-                    user = relationship(User)
-                    character_id = Column(Integer, ForeignKey('character.id'))
-                    character = relationship(Character)
-                    planet_id = Column(Integer, ForeignKey('planet.id'))
-                    planet = relationship(Planet)
-                    vehicle_id = Column(Integer, ForeignKey('vehicle.id'))
-                    vehicle = relationship(Vehicle)
-                    species_id = Column(Integer, ForeignKey('species.id'))
-                    species = relationship(Species)
-                    starship_id = Column(Integer, ForeignKey('starship.id'))
-                    starship = relationship(Starship)
-                    films_id = Column(Integer, ForeignKey('films.id'))
-                    films = relationship(Films)
+class SavedHighlight(Base):
+                __tablename__ = 'saved_highlight'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                highlight_id = Column(Integer, ForeignKey('highlight.id'))
+                highlight = relationship(Highlight)
 
+
+
+class StoryView(Base):
+                __tablename__ = 'story_view'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_id = Column(Integer, ForeignKey('story.id'))
+                story = relationship(Story)
+
+class StoryReply(Base):
+                __tablename__ = 'story_reply'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_id = Column(Integer, ForeignKey('story.id'))
+                story = relationship(Story)
+                reply = Column(String(250), nullable=False)
+
+class StoryReplyView(Base):
+                __tablename__ = 'story_reply_view'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_reply_id = Column(Integer, ForeignKey('story_reply.id'))
+                story_reply = relationship(StoryReply)
+
+class StoryReplyLike(Base):
+                __tablename__ = 'story_reply_like'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_reply_id = Column(Integer, ForeignKey('story_reply.id'))
+                story_reply = relationship(StoryReply)
+    
+class StoryReplyReply(Base):
+                __tablename__ = 'story_reply_reply'
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey('user.id'))
+                user = relationship(User)
+                story_reply_id = Column(Integer, ForeignKey('story_reply.id'))
+                story_reply = relationship(StoryReply)
+                reply = Column(String(250), nullable=False)
 
 def to_dict(self):
         return {}
